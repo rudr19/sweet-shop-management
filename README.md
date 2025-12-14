@@ -1,10 +1,24 @@
 # Sweet Shop Management System
 
-A full-stack web application for managing a sweet shop with a complete e-commerce experience. Features user authentication, inventory management, shopping cart, and checkout flow. Customers can browse sweets, add to cart, and complete purchases, while admins manage inventory through a comprehensive dashboard.
+A full-stack web application for managing a sweet shop with e-commerce functionality. Customers can browse and purchase sweets, while administrators manage inventory. Built using Test-Driven Development methodology.
+
+**Repository:** https://github.com/rudr19/sweet-shop-management
+
+## Git Branches
+
+- **`tdd-implementation`** - Development branch with incremental commits showing TDD workflow
+- **`master`** - Stable branch with complete implementation
 
 ## Quick Start
 
 ```bash
+# Clone the repository
+git clone https://github.com/rudr19/sweet-shop-management.git
+cd sweet-shop-management
+
+# Checkout TDD branch (recommended)
+git checkout tdd-implementation
+
 # 1. Setup database
 psql -U postgres -c "CREATE DATABASE sweet_shop;"
 
@@ -22,7 +36,7 @@ npm run seed:all
 npm run dev
 
 # 5. In a new terminal, setup and start frontend
-cd frontend
+cd ../frontend
 npm install
 npm run dev
 
@@ -309,42 +323,59 @@ Using AI tools like Claude and ChatGPT is super helpful for getting past the ini
 
 Would I use it again? Definitely. It's like having knowledgeable coding buddies who can quickly write basic code while you focus on the logic and design. Claude was better for generating complete code structures, while ChatGPT was helpful for explaining concepts and debugging specific errors.
 
-## Testing & Test Report
+## Test-Driven Development
+
+This project was built using Test-Driven Development methodology. The `tdd-implementation` branch commit history shows the Red-Green-Refactor cycle:
+
+- Tests written before implementation (Red phase)
+- Code implemented to pass tests (Green phase)
+- Code refactored for quality (Refactor phase)
+
+### Running Tests
+
+```bash
+cd backend
+npm test
+```
 
 ### Test Coverage
-All 21 tests passing with 100% success rate.
 
-**Test Results:**
 ```
 Test Suites: 2 passed, 2 total
-Tests:       21 passed, 21 total
-Time:        8.087s
+Tests:       38 passed, 38 total
 
-Authentication API (9 tests)
-✅ should register a new user successfully
-✅ should not register a user with duplicate email
-✅ should require email and password
-✅ should validate email format
-✅ should require minimum password length
-✅ should login successfully with correct credentials
-✅ should not login with incorrect password
-✅ should not login with non-existent email
-✅ should require email and password
-
-Sweets API (12 tests)
-✅ should create a new sweet with valid authentication
-✅ should not create sweet without authentication
-✅ should validate required fields
-✅ should validate price is non-negative
-✅ should get all sweets with authentication
-✅ should not get sweets without authentication
-✅ should update sweet with valid authentication
-✅ should not update sweet without authentication
-✅ should return 404 for non-existent sweet
-✅ should delete sweet with admin authentication
-✅ should not delete sweet with regular user authentication
-✅ should not delete sweet without authentication
+Authentication API - 9 tests
+Sweets API - 29 tests
 ```
+
+Tests cover:
+- User registration and login flows
+- JWT authentication and authorization
+- CRUD operations for sweets
+- Search functionality (by name, category, price)
+- Purchase and restock operations
+- Input validation and error handling
+- Role-based access control (admin vs customer)
+
+## Features
+
+### Customer Features
+- Browse sweets with category filtering
+- Search by name, category, or price range
+- Add items to shopping cart
+- Complete checkout with shipping information
+- View order history
+
+### Admin Features
+- Dashboard with inventory statistics
+- Add, edit, and delete sweets
+- Manage inventory quantities (restock)
+- View all orders
+
+### Additional Features
+- User profiles with editable information
+- Multiple payment methods
+- Order tracking
 
 ### Running Tests
 ```bash
