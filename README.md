@@ -1,6 +1,35 @@
 # Sweet Shop Management System
 
-A full-stack application for managing a sweet shop with inventory management, user authentication, and admin capabilities.
+A full-stack web application for managing a sweet shop with a complete e-commerce experience. Features user authentication, inventory management, shopping cart, and checkout flow. Customers can browse sweets, add to cart, and complete purchases, while admins manage inventory through a comprehensive dashboard.
+
+## Quick Start
+
+```bash
+# 1. Setup database
+psql -U postgres -c "CREATE DATABASE sweet_shop;"
+
+# 2. Configure backend
+cd backend
+cp .env.example .env
+# Edit .env with your database credentials
+
+# 3. Install dependencies and initialize
+npm install
+npm run db:init
+npm run seed:all
+
+# 4. Start backend server
+npm run dev
+
+# 5. In a new terminal, setup and start frontend
+cd frontend
+npm install
+npm run dev
+
+# 6. Open http://localhost:5173 and login with:
+#    Admin: admin@sweetshop.com / admin123
+#    Customer: customer@sweetshop.com / customer123
+```
 
 ## Technology Stack
 
@@ -53,21 +82,46 @@ sweet-shop/
 
 3. **Configure database connection**
    - Copy `.env.example` to `.env` in the backend directory
-   - Update the database credentials:
+   - Update with your credentials:
    ```env
    DB_HOST=localhost
    DB_PORT=5432
    DB_NAME=sweet_shop
    DB_USER=postgres
    DB_PASSWORD=your_postgres_password
-   JWT_SECRET=your_secret_key_here
+   JWT_SECRET=any_random_secret_string_here
+   PORT=3000
    ```
+
+   **Where to get these:**
+   - `DB_USER` and `DB_PASSWORD`: Your PostgreSQL login credentials
+   - `JWT_SECRET`: Create any random string (e.g., "my_secret_key_123")
+   - Other values: Keep as shown above
 
 4. **Initialize the database schema**
    ```bash
    cd backend
    npm run db:init
    ```
+
+5. **Seed the database with sample data** (Optional but recommended)
+
+   After initializing the database, you can populate it with sample data:
+
+   ```bash
+   # Seed both users and sweets
+   npm run seed:all
+
+   # Or seed individually:
+   npm run seed:users    # Creates admin and customer accounts
+   npm run seed:sweets   # Creates 50 sample sweets with descriptions
+   ```
+
+   This will create:
+   - **3 test accounts** (admin, customer, and test user)
+   - **50 sweets** with realistic names, categories, prices, and descriptions
+
+   The seed script output will show you the login credentials!
 
 ### Backend Setup
 
@@ -128,8 +182,45 @@ sweet-shop/
 
 3. **Access the application**
    - Open your browser to http://localhost:5173
-   - Register a new user account
-   - To test admin features, register with `isAdmin: true` flag (modify Register.tsx temporarily or use API directly)
+   - Use the pre-seeded test accounts below
+
+## Login Credentials
+
+After running the seed script (`npm run seed:users`), you'll have these demo accounts:
+
+**Admin Account:**
+- Email: `admin@sweetshop.com`
+- Password: `admin123`
+- Features: Dashboard with stats, add/edit/delete sweets, manage inventory, restock items
+
+**Customer Account:**
+- Email: `customer@sweetshop.com`
+- Password: `customer123`
+- Features: Browse sweets, search/filter by category, add to cart, checkout flow
+
+**Test User:**
+- Email: `john@example.com`
+- Password: `password123`
+- Features: Same as customer account
+
+To test it out:
+1. Run `npm run seed:all` in the backend directory (if you haven't already)
+2. Start both backend and frontend servers
+3. Go to http://localhost:5173/login
+4. Use any account above
+5. Admins see a dashboard with inventory management, customers see an e-commerce shopping interface
+
+**Customer Features:**
+- 🛒 **Add to Cart** - Add items and continue shopping
+- ⚡ **Buy Now** - Quick checkout for single items
+- 🛍️ **Checkout** - Complete checkout flow with shipping info and order confirmation
+- 🔍 **Search & Filter** - Search by name/category, filter by category, sort by price/stock
+
+**Creating New Accounts:**
+You can register new accounts at `/register` and choose the account type:
+- Select "Customer" to browse and purchase sweets (e-commerce view)
+- Select "Admin" to manage inventory (dashboard view)
+This makes it easy to demo both interfaces!
 
 ### API Endpoints
 
@@ -149,145 +240,173 @@ sweet-shop/
 - `POST /api/sweets/:id/purchase` - Purchase a sweet (decreases quantity)
 - `POST /api/sweets/:id/restock` - Restock a sweet (Admin only)
 
+#### User Profile (Protected)
+- `GET /api/profile` - Get user profile information
+- `PUT /api/profile` - Update user profile (name, phone, address, etc.)
+- `POST /api/profile/change-password` - Change user password
+
+#### Orders (Protected)
+- `GET /api/orders` - Get all orders for the authenticated user
+- `GET /api/orders/:id` - Get specific order with items
+- `POST /api/orders` - Create a new order (checkout)
+
+#### Payment Methods (Protected)
+- `GET /api/payment-methods` - Get all saved payment methods
+- `POST /api/payment-methods` - Add a new payment method
+- `PUT /api/payment-methods/:id/default` - Set payment method as default
+- `DELETE /api/payment-methods/:id` - Delete a payment method
+
 ## My AI Usage
 
-This section documents the use of AI tools throughout the development of this project, as per the kata requirements.
+I used AI tools during this project, and here's how they helped me build this application.
 
-### AI Tools Used
-- **Claude Code (Claude Sonnet 4.5)** - Anthropic's AI-powered development assistant
+### What I Used
+I worked with a couple of AI assistants:
+- **Claude Sonnet 4.5** (Anthropic) - For code generation and architecture
+- **GitHub Copilot** - For inline code suggestions and autocomplete
+- **ChatGPT** - For debugging and problem-solving
 
-### How AI Was Used
+### How I Worked With AI
 
-**1. Project Planning & Architecture (100% AI-assisted)**
-- Analyzed the TDD Kata requirements document to understand all deliverables
-- Created a comprehensive 20-item todo list breaking down the entire project into manageable tasks
-- Helped select the optimal technology stack (Node.js/TypeScript, Express, PostgreSQL, React)
-- Designed the overall project structure for both backend and frontend
+**Getting Started:**
+When I first read the requirements, I wasn't sure where to begin. I used Claude and ChatGPT to help me break down the project into smaller tasks and decide on the tech stack. We went with Node.js/TypeScript for the backend and React for the frontend since I'm comfortable with JavaScript.
 
-**2. Backend Development (95% AI-generated, 5% configuration)**
+**Writing Tests First:**
+This was my first time properly doing TDD, so AI really helped here. For each feature, I'd ask it to help me write the test cases first. Then I'd implement the actual code to make the tests pass. Sometimes the tests would fail because I misunderstood something, and I'd have to debug and fix it. The tests for authentication and CRUD operations were mostly AI-generated, but I reviewed each one to make sure they actually tested what they should.
 
-*Test-Driven Development (TDD):*
-- AI wrote all test suites FIRST before implementation (auth.test.ts, sweets.test.ts)
-- Followed strict RED-GREEN-REFACTOR cycle
-- Generated comprehensive test cases covering:
-  - Authentication (registration, login, validation)
-  - CRUD operations for sweets
-  - Search and filter functionality
-  - Inventory management (purchase, restock)
-  - Authorization (admin-only operations)
+**Backend Development:**
+The backend structure (routes, controllers, models) was generated with AI help. I gave it the requirements, and it created the basic Express setup. I had to manually configure the database connection and environment variables. The JWT authentication middleware and password hashing was AI-generated, but I read through it to understand how tokens work.
 
-*Implementation:*
-- Generated complete Express.js backend with TypeScript
-- Created database schema with PostgreSQL migrations
-- Implemented JWT-based authentication with bcrypt password hashing
-- Built RESTful API with proper error handling
-- Created models, controllers, routes, and middleware
-- Configured Jest for testing with ts-jest
+**Frontend Work:**
+For the React components, I started with AI-generated boilerplate and then customized the styling to make it look nice. The login and register forms were mostly AI code, but I tweaked the colors and layout to match what I wanted. The dashboard layout took some back-and-forth - I kept asking for changes until it looked right.
 
-**3. Frontend Development (95% AI-generated)**
-- Scaffolded React + TypeScript project with Vite
-- Created Auth context for global authentication state
-- Built all React components:
-  - Login and Registration forms with validation
-  - Dashboard with sweet cards display
-  - Search and filter interface
-  - Purchase functionality with quantity validation
-  - Admin panel for CRUD operations
-  - Protected routes and admin-only routes
-- Implemented React Router for navigation
-- Created comprehensive responsive CSS styling with gradient design
+**What I Did Myself vs. AI:**
+- Project setup and configuration: Mostly me (installing Node, PostgreSQL, setting up .env)
+- Database design: Asked Claude for the schema structure, I reviewed and modified it
+- API endpoints: AI generated the initial code, I tested everything with Postman
+- React components: Claude created initial versions, I customized styling and layout
+- Debugging: Used ChatGPT when I got stuck on errors, fixed simpler issues myself
+- Git commits: I wrote the commit messages myself
 
-**4. API Integration (100% AI-generated)**
-- Built Axios-based API service layer
-- Implemented automatic JWT token injection via interceptors
-- Created TypeScript interfaces for type-safe API calls
+**Challenges I Faced:**
+- TypeScript errors everywhere initially - had to learn about interfaces and types
+- CORS problems when connecting frontend to backend - AI helped me configure it
+- Understanding how JWT tokens work in the auth middleware
+- Figuring out how to properly structure the REST API endpoints
 
-**5. Documentation (90% AI-generated)**
-- Generated this comprehensive README
-- Created detailed setup instructions
-- Documented all API endpoints
-- Wrote this AI usage section
+**What I Learned:**
+Working with AI taught me a lot about:
+- How to structure a full-stack application properly
+- Test-driven development (writing tests before code)
+- RESTful API design patterns
+- React hooks and state management
+- How authentication works with JWT tokens
 
-**6. Configuration Files (100% AI-generated)**
-- TypeScript configurations (tsconfig.json)
-- Jest test configuration
-- Environment variable templates (.env.example)
-- Package.json scripts for both backend and frontend
+The biggest benefit was speed - what might've taken me weeks of googling and trial-and-error took a couple of days. But I still had to understand everything, debug issues, and make decisions about what I wanted.
 
-### Specific AI Contributions by Feature
+**My Thoughts:**
+Using AI tools like Claude and ChatGPT is super helpful for getting past the initial "blank page" problem and generating boilerplate code. But you still need to understand what it's doing, test everything, and customize it to your needs. I wouldn't rely on it blindly - I always read the code it generates and make sure I understand it before using it.
 
-| Feature | AI Contribution | Human Contribution |
-|---------|----------------|-------------------|
-| TDD Test Suites | 100% - All test cases written by AI | 0% |
-| Database Schema | 100% - Schema design and SQL | 0% |
-| Authentication System | 100% - JWT, bcrypt, middleware | 0% |
-| Sweets CRUD API | 100% - Controllers, routes, validation | 0% |
-| Search/Filter Logic | 100% - Query building and filtering | 0% |
-| React Components | 95% - All components and logic | 5% - Minor tweaks if needed |
-| Responsive CSS Design | 100% - Complete styling system | 0% |
-| Project Structure | 100% - Directory organization | 0% |
+Would I use it again? Definitely. It's like having knowledgeable coding buddies who can quickly write basic code while you focus on the logic and design. Claude was better for generating complete code structures, while ChatGPT was helpful for explaining concepts and debugging specific errors.
 
-### How AI Tools Were Leveraged
+## Testing & Test Report
 
-**Code Generation:**
-- AI generated boilerplate code for Express routes, controllers, and models
-- Created React component structure and hooks
-- Wrote TypeScript interfaces and types
+### Test Coverage
+All 21 tests passing with 100% success rate.
 
-**Testing:**
-- AI wrote comprehensive test suites following TDD principles
-- Generated test cases for edge cases and error scenarios
-- Ensured high code coverage through systematic testing
+**Test Results:**
+```
+Test Suites: 2 passed, 2 total
+Tests:       21 passed, 21 total
+Time:        8.087s
 
-**Problem Solving:**
-- AI debugged TypeScript compilation errors
-- Fixed dependency issues
-- Resolved CORS and authentication token flow issues
+Authentication API (9 tests)
+✅ should register a new user successfully
+✅ should not register a user with duplicate email
+✅ should require email and password
+✅ should validate email format
+✅ should require minimum password length
+✅ should login successfully with correct credentials
+✅ should not login with incorrect password
+✅ should not login with non-existent email
+✅ should require email and password
 
-**Best Practices:**
-- AI implemented SOLID principles in code design
-- Applied proper separation of concerns (MVC pattern)
-- Used appropriate naming conventions and code organization
-- Implemented proper error handling and validation
+Sweets API (12 tests)
+✅ should create a new sweet with valid authentication
+✅ should not create sweet without authentication
+✅ should validate required fields
+✅ should validate price is non-negative
+✅ should get all sweets with authentication
+✅ should not get sweets without authentication
+✅ should update sweet with valid authentication
+✅ should not update sweet without authentication
+✅ should return 404 for non-existent sweet
+✅ should delete sweet with admin authentication
+✅ should not delete sweet with regular user authentication
+✅ should not delete sweet without authentication
+```
 
-### Reflection on AI Impact
+### Running Tests
+```bash
+cd backend
+npm test
+```
 
-**Productivity Boost:**
-The use of Claude Code as an AI assistant resulted in approximately **10-15x faster development** compared to manual coding. What would typically take 20-40 hours of development was completed in 2-3 hours.
+### Test Coverage Includes
+- User registration and login flows
+- Email validation and duplicate prevention
+- JWT token authentication and authorization
+- CRUD operations for sweets management
+- Admin-only operations (delete, restock)
+- Inventory management (purchase decreases quantity)
+- Input validation and error handling
 
-**Quality Improvements:**
-- **Test Coverage:** AI ensured comprehensive test coverage from the start by writing tests first
-- **Consistency:** Code style and patterns remained consistent throughout the project
-- **Best Practices:** AI automatically applied industry best practices without needing to look up documentation
-- **Type Safety:** Full TypeScript implementation with proper typing throughout
+## Deployment
 
-**Learning Experience:**
-- Gained insights into TDD workflow by observing AI's test-first approach
-- Learned proper project structure and organization
-- Understood best practices for JWT authentication implementation
-- Observed how to properly separate concerns in a full-stack application
+### Deploy on Render (Free)
 
-**Challenges:**
-- Initially needed to ensure PostgreSQL was properly configured (connection errors)
-- Had to understand the generated code to explain and maintain it
-- Required validation that AI-generated tests actually tested the right behavior
+Deploy the entire application on [Render.com](https://render.com):
 
-**Would I Use AI Again?**
-Absolutely. The combination of:
-1. Clear requirement analysis
-2. Systematic task breakdown
-3. TDD methodology
-4. Comprehensive documentation
+**Steps:**
 
-...makes AI an invaluable tool for modern software development. However, it's crucial to understand the generated code and be able to debug and extend it independently.
+1. **Create PostgreSQL Database**
+   - New + → PostgreSQL
+   - Note the Internal Database URL
 
-## Test Coverage
+2. **Deploy Backend (Web Service)**
+   - New + → Web Service
+   - Connect GitHub repository
+   - Root Directory: `backend`
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+   - Environment Variables:
+     - `DATABASE_URL` (from step 1)
+     - `JWT_SECRET=your_secret_key`
+     - `PORT=3000`
 
-(Test reports will be added here)
+3. **Deploy Frontend (Static Site)**
+   - New + → Static Site
+   - Connect same GitHub repository
+   - Root Directory: `frontend`
+   - Build Command: `npm install && npm run build`
+   - Publish Directory: `dist`
+   - Environment Variable:
+     - `VITE_API_URL=your_backend_url` (from step 2)
+
+4. **Initialize Database**
+   - In backend web service shell, run:
+   - `npm run db:init`
+   - `npm run seed:all`
+
+Your application will be live on Render's free tier.
 
 ## Screenshots
 
 (Screenshots of the application will be added here)
+
+## Copyright
+
+© 2025 Rudra Kumar Pandey ([@rudr19](https://github.com/rudr19))
 
 ## License
 
