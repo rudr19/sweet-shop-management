@@ -3,6 +3,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
 import sweetsRoutes from './routes/sweets.routes';
+import profileRoutes from './routes/profile';
+import ordersRoutes from './routes/orders';
+import paymentMethodsRoutes from './routes/paymentMethods';
 
 dotenv.config();
 
@@ -21,6 +24,9 @@ app.get('/health', (_req: Request, res: Response) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/sweets', sweetsRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/orders', ordersRoutes);
+app.use('/api/payment-methods', paymentMethodsRoutes);
 
 // Error handling middleware
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
