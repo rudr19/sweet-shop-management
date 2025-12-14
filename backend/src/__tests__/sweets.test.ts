@@ -193,4 +193,168 @@ describe('Sweets API', () => {
       expect(response.status).toBe(401);
     });
   });
+
+  describe('GET /api/sweets/search', () => {
+    beforeEach(async () => {
+      // Add diverse test sweets
+      await pool.query(`
+        INSERT INTO sweets (name, category, price, quantity) VALUES
+        ('Dark Chocolate Bar', 'Chocolate', 3.50, 50),
+        ('Milk Chocolate Bar', 'Chocolate', 2.50, 100),
+        ('Gummy Bears', 'Gummies', 1.99, 150),
+        ('Sour Gummies', 'Gummies', 2.49, 75),
+        ('Lollipop', 'Hard Candy', 0.99, 200)
+      `);
+    });
+
+    it('should search sweets by name', async () => {
+      const response = await request(app)
+        .get('/api/sweets/search?name=Chocolate')
+        .set('Authorization', `Bearer ${authToken}`);
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBe(2);
+      expect(response.body.every((s: any) => s.name.includes('Chocolate'))).toBe(true);
+    });
+
+    it('should search sweets by category', async () => {
+      const response = await request(app)
+        .get('/api/sweets/search?category=Gummies')
+        .set('Authorization', `Bearer ${authToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.length).toBe(2);
+      expect(response.body.every((s: any) => s.category === 'Gummies')).toBe(true);
+    });
+
+    it('should search sweets by price range', async () => {
+      const response = await request(app)
+        .get('/api/sweets/search?minPrice=2.00&maxPrice=3.00')
+        .set('Authorization', `Bearer ${authToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.length).toBeGreaterThan(0);
+      expect(response.body.every((s: any) => {
+        const price = parseFloat(s.price);
+        return price >= 2.00 && price <= 3.00;
+      })).toBe(true);
+    });
+
+    it('should search with multiple criteria', async () => {
+      const response = await request(app)
+        .get('/api/sweets/search?category=Chocolate&minPrice=3.00')
+        .set('Authorization', `Bearer ${authToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.length).toBe(1);
+      expect(response.body[0].name).toBe('Dark Chocolate Bar');
+    });
+
+    it('should require authentication for search', async () => {
+      const response = await request(app)
+        .get('/api/sweets/search?name=Chocolate');
+
+      expect(response.status).toBe(401);
+    });
+  });
+
+  describe('POST /api/sweets/:id/purchase', () => {
+    let sweetId: number;
+
+    beforeEach(async () => {
+      const result = await pool.query(`
+        INSERT INTO sweets (name, category, price, quantity)
+        VALUES ('Chocolate Bar', 'Chocolate', 2.50, 100)
+        RETURNING id
+      `);
+      sweetId = result.rows[0].id;
+    });
+
+    it('should purchase sweet and decrease quantity', async () => {
+      const response = await request(app)
+        .post(`/api/sweets/${sweetId}/purchase`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ quantity: 5 });
+
+      expect(response.status).toBe(200);
+      expect(response.body.quantity).toBe(95);
+    });
+
+    it('should not purchase more than available quantity', async () => {
+      const response = await request(app)
+        .post(`/api/sweets/${sweetId}/purchase`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ quantity: 150 });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('error');
+    });
+
+    it('should not purchase with invalid quantity', async () => {
+      const response = await request(app)
+        .post(`/api/sweets/${sweetId}/purchase`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ quantity: -5 });
+
+      expect(response.status).toBe(400);
+    });
+
+    it('should require authentication for purchase', async () => {
+      const response = await request(app)
+        .post(`/api/sweets/${sweetId}/purchase`)
+        .send({ quantity: 5 });
+
+      expect(response.status).toBe(401);
+    });
+  });
+
+  describe('POST /api/sweets/:id/restock', () => {
+    let sweetId: number;
+
+    beforeEach(async () => {
+      const result = await pool.query(`
+        INSERT INTO sweets (name, category, price, quantity)
+        VALUES ('Chocolate Bar', 'Chocolate', 2.50, 10)
+        RETURNING id
+      `);
+      sweetId = result.rows[0].id;
+    });
+
+    it('should restock sweet with admin authentication', async () => {
+      const response = await request(app)
+        .post(`/api/sweets/${sweetId}/restock`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ quantity: 50 });
+
+      expect(response.status).toBe(200);
+      expect(response.body.quantity).toBe(60);
+    });
+
+    it('should not restock with regular user authentication', async () => {
+      const response = await request(app)
+        .post(`/api/sweets/${sweetId}/restock`)
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({ quantity: 50 });
+
+      expect(response.status).toBe(403);
+    });
+
+    it('should not restock without authentication', async () => {
+      const response = await request(app)
+        .post(`/api/sweets/${sweetId}/restock`)
+        .send({ quantity: 50 });
+
+      expect(response.status).toBe(401);
+    });
+
+    it('should not restock with invalid quantity', async () => {
+      const response = await request(app)
+        .post(`/api/sweets/${sweetId}/restock`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ quantity: -10 });
+
+      expect(response.status).toBe(400);
+    });
+  });
 });
