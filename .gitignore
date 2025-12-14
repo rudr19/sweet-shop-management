@@ -52,3 +52,6 @@ yarn.lock
 
 # PostgreSQL installer
 *.exe
+
+# Documentation source files
+*.docx
