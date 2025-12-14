@@ -392,6 +392,55 @@ npm test
 - Inventory management (purchase decreases quantity)
 - Input validation and error handling
 
+## Screenshots
+
+### Registration & Login
+
+![Registration Page](screenshots/01-registration-page.png)
+*User registration with role selection (Admin or Customer)*
+
+![Login Page](screenshots/02-login-page.png)
+*Secure login with demo credentials available*
+
+### Admin Interface
+
+![Admin Dashboard](screenshots/03-admin-dashboard.png)
+*Dashboard with inventory statistics and management overview*
+
+![Add Sweet](screenshots/04-admin-add-sweet.png)
+*Form to add new sweets with name, category, price, quantity, and description*
+
+![Inventory List](screenshots/05-admin-inventory-list.png)
+*Complete inventory management with edit and delete options*
+
+### Customer Shopping Experience
+
+![Customer Dashboard](screenshots/06-customer-dashboard.png)
+*Browse sweets with add to cart and buy now options*
+
+![Menu View](screenshots/07-customer-menu.png)
+*Complete sweet catalog with detailed product information*
+
+![Product Cards](screenshots/11-product-cards.png)
+*Sweet cards showing price, stock, and quick actions*
+
+![Category Filter](screenshots/12-category-filter.png)
+*Filter sweets by category (Mithai, Chocolate, Dry Fruits, etc.)*
+
+![Search Functionality](screenshots/13-search-functionality.png)
+*Search sweets by name or category with real-time results*
+
+### User Account Features
+
+![Customer Profile](screenshots/08-customer-profile.png)
+*Edit profile information including name, phone, and address*
+
+![Order History](screenshots/09-customer-orders.png)
+*View all past orders with details and status*
+
+![Payment Methods](screenshots/10-payment-methods.png)
+*Manage saved payment methods and set default card*
+
 ## Deployment
 
 ### Deploy on Render (Free)
@@ -430,10 +479,6 @@ Deploy the entire application on [Render.com](https://render.com):
    - `npm run seed:all`
 
 Your application will be live on Render's free tier.
-
-## Screenshots
-
-(Screenshots of the application will be added here)
 
 ## Copyright
 

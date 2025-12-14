@@ -325,6 +325,16 @@ const Login: React.FC = () => {
             <div>👑 Admin: admin@sweetshop.com / admin123</div>
             <div>👤 Customer: customer@sweetshop.com / customer123</div>
           </div>
+
+          {/* Copyright */}
+          <div style={{
+            marginTop: 'var(--spacing-xl)',
+            textAlign: 'center',
+            fontSize: 'var(--text-xs)',
+            color: 'var(--color-text-secondary)',
+          }}>
+            © 2025 Rudra Kumar Pandey. All rights reserved.
+          </div>
         </div>
       </div>
     </div>
