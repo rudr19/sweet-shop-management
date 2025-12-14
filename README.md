@@ -441,45 +441,6 @@ npm test
 ![Payment Methods](screenshots/10-payment-methods.png)
 *Manage saved payment methods and set default card*
 
-## Deployment
-
-### Deploy on Render (Free)
-
-Deploy the entire application on [Render.com](https://render.com):
-
-**Steps:**
-
-1. **Create PostgreSQL Database**
-   - New + → PostgreSQL
-   - Note the Internal Database URL
-
-2. **Deploy Backend (Web Service)**
-   - New + → Web Service
-   - Connect GitHub repository
-   - Root Directory: `backend`
-   - Build Command: `npm install`
-   - Start Command: `npm start`
-   - Environment Variables:
-     - `DATABASE_URL` (from step 1)
-     - `JWT_SECRET=your_secret_key`
-     - `PORT=3000`
-
-3. **Deploy Frontend (Static Site)**
-   - New + → Static Site
-   - Connect same GitHub repository
-   - Root Directory: `frontend`
-   - Build Command: `npm install && npm run build`
-   - Publish Directory: `dist`
-   - Environment Variable:
-     - `VITE_API_URL=your_backend_url` (from step 2)
-
-4. **Initialize Database**
-   - In backend web service shell, run:
-   - `npm run db:init`
-   - `npm run seed:all`
-
-Your application will be live on Render's free tier.
-
 ## Copyright
 
 © 2025 Rudra Kumar Pandey ([@rudr19](https://github.com/rudr19))
